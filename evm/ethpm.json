@@ -1,0 +1,14 @@
+{
+    "package_name": "evm-htlc",
+    "version": "0.0.0",
+    "description": "An Ether HTLC contract written in Solidity",
+    "authors": [
+        "Komninos C. <komninoschat@gmail.com>"
+    ],
+    "keywords": [
+        "ethereum",
+        "htlc",
+        "swap"
+    ],
+    "license": "MIT"
+}
