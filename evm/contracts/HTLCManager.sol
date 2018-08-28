@@ -17,9 +17,21 @@ contract HTLCManager {
         State state;
     }
 
-    event Initiated(address sender, address recipient, uint value);
-    event Completed(address sender, address recipient, uint value);
-    event Refunded(address sender, address recipient, uint value);
+    event Initiated(bytes32 id,
+                    address sender,
+                    address recipient,
+                    uint value,
+                    uint expirationTime,
+                    bytes32 H);
+    event Completed(bytes32 htlcId,
+                    address sender,
+                    address recipient,
+                    uint value,
+                    bytes32 R);
+    event Refunded(bytes32 htlcId,
+                   address sender,
+                   address recipient,
+                   uint value);
 
     mapping(bytes32 => HTLC) private htlcs;
 
@@ -39,7 +51,7 @@ contract HTLCManager {
             state: State.INITIATED
         });
 
-        emit Initiated(msg.sender, recipient, msg.value);
+        emit Initiated(id, msg.sender, recipient, msg.value, expirationTime, H);
     }
 
     function claim(bytes32 id, bytes32 R) public {
@@ -50,7 +62,11 @@ contract HTLCManager {
 
         htlcs[id].state = State.COMPLETED;
 
-        emit Completed(htlcs[id].sender, htlcs[id].recipient, htlcs[id].value);
+        emit Completed(id,
+                       htlcs[id].sender,
+                       htlcs[id].recipient,
+                       htlcs[id].value,
+                       R);
 
         msg.sender.transfer(htlcs[id].value);
     }
@@ -62,7 +78,10 @@ contract HTLCManager {
 
         htlcs[id].state = State.REFUNDED;
 
-        emit Refunded(htlcs[id].sender, htlcs[id].recipient, htlcs[id].value);
+        emit Refunded(id,
+                      htlcs[id].sender,
+                      htlcs[id].recipient,
+                      htlcs[id].value);
 
         msg.sender.transfer(htlcs[id].value);
     }
