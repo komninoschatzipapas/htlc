@@ -7,7 +7,8 @@
     "build": "truffle compile",
     "deploy": "truffle deploy",
     "testrpc": "ganache-cli --accounts 2 --gasPrice 0",
-    "test": "truffle test"
+    "test": "truffle test",
+    "lint": "prettier --write **/*.sol"
   },
   "repository": {
     "type": "git",
@@ -19,6 +20,8 @@
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "ganache-cli": "^6.1.8",
+    "prettier": "^1.15.2",
+    "prettier-plugin-solidity": "^1.0.0-alpha.11",
     "truffle": "^5.0.0-beta.0"
   },
   "dependencies": {}
