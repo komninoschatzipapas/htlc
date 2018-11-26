@@ -9,6 +9,10 @@ const r32 = () => crypto.randomBytes(32);
 const hash = (x) => crypto.createHash('sha256').update(x).digest();
 const btoh = (x) => '0x' + x.toString('hex');
 
+function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 contract('HTLCManager', (accounts) => {
     let htlcManager;
 
@@ -65,7 +69,7 @@ contract('HTLCManager', (accounts) => {
             accountABalanceDifference = web3.utils.toWei('-1', 'ether');
 
             return chai.expect(htlcManager.fund(accounts[1], H,
-                +Date.now() + 90000, htlcId, {
+                90000, htlcId, {
                     'from': accounts[0],
                     'value': web3.utils.toWei('1', 'ether'),
                     'gasLimit': web3.utils.toHex('200000'),
@@ -76,7 +80,7 @@ contract('HTLCManager', (accounts) => {
         it('Should not be able to re-fund an HTLC', async () => {
             accountABalanceDifference = web3.utils.toWei('-1', 'ether');
 
-            await htlcManager.fund(accounts[1], H, +Date.now() + 600000,
+            await htlcManager.fund(accounts[1], H, 600000,
                 htlcId, {
                     'from': accounts[0],
                     'value': web3.utils.toWei('1', 'ether'),
@@ -84,7 +88,7 @@ contract('HTLCManager', (accounts) => {
                     'gasPrice': await web3.eth.getGasPrice(),
                 });
 
-            return expect(htlcManager.fund(accounts[1], H, +Date.now() + 600000,
+            return expect(htlcManager.fund(accounts[1], H, 600000,
                 htlcId, {
                     'from': accounts[0],
                     'value': web3.utils.toWei('1', 'ether'),
@@ -95,7 +99,7 @@ contract('HTLCManager', (accounts) => {
 
         it('Should revert when no Ethereum is sent', async () => {
             return expect(htlcManager.fund(accounts[1], htlcId,
-                +Date.now() + 90000, web3.utils.asciiToHex('random1'), {
+                90000, web3.utils.asciiToHex('random1'), {
                     'from': accounts[0],
                     'value': 0,
                     'gasLimit': web3.utils.toHex('200000'),
@@ -109,7 +113,7 @@ contract('HTLCManager', (accounts) => {
             accountABalanceDifference = web3.utils.toWei('-1', 'ether');
             accountBBalanceDifference = web3.utils.toWei('1', 'ether');
 
-            await htlcManager.fund(accounts[1], H, +Date.now() + 90000,
+            await htlcManager.fund(accounts[1], H, 90000,
                 htlcId, {
                     'from': accounts[0],
                     'value': web3.utils.toWei('1', 'ether'),
@@ -138,7 +142,7 @@ contract('HTLCManager', (accounts) => {
         it('Should not be able to claim someone else\'s HTLC', async () => {
             accountABalanceDifference = web3.utils.toWei('-1', 'ether');
 
-            await htlcManager.fund(accounts[1], H, +Date.now() + 90000,
+            await htlcManager.fund(accounts[1], H, 90000,
                 htlcId, {
                     'from': accounts[0],
                     'value': web3.utils.toWei('1', 'ether'),
@@ -156,7 +160,7 @@ contract('HTLCManager', (accounts) => {
         it('Should not able to claim an HTLC with an invalid R', async () => {
             accountABalanceDifference = web3.utils.toWei('-1', 'ether');
 
-            await htlcManager.fund(accounts[1], H, +Date.now() + 90000,
+            await htlcManager.fund(accounts[1], H, 90000,
                 htlcId, {
                     'from': accounts[0],
                     'value': web3.utils.toWei('1', 'ether'),
@@ -181,13 +185,14 @@ contract('HTLCManager', (accounts) => {
                     'gasLimit': web3.utils.toHex('200000'),
                     'gasPrice': await web3.eth.getGasPrice(),
                 });
+            await sleep(3000);
             return expect(htlcManager.claim(htlcId, R, {
                     'from': accounts[1],
                     'value': 0,
                     'gasLimit': web3.utils.toHex('200000'),
                     'gasPrice': await web3.eth.getGasPrice(),
                 })).to.eventually.be.rejected;
-        });
+        }).timeout(5000);
     });
 
     describe('refund', () => {
@@ -201,13 +206,15 @@ contract('HTLCManager', (accounts) => {
                     'gasPrice': await web3.eth.getGasPrice(),
                 });
 
+            await sleep(3000);
+
             return expect(htlcManager.refund(htlcId, {
                 'from': accounts[0],
                 'value': 0,
                 'gasLimit': web3.utils.toHex('200000'),
                 'gasPrice': await web3.eth.getGasPrice(),
             })).to.eventually.be.fulfilled;
-        });
+        }).timeout(5000);
 
         it('Should not be able to refund the funds of an HTLC with an ' +
           'invalid id', async () => {
@@ -245,7 +252,7 @@ contract('HTLCManager', (accounts) => {
           async () => {
             accountABalanceDifference = web3.utils.toWei('-1', 'ether');
 
-            await htlcManager.fund(accounts[1], H, +Date.now() + 90000,
+            await htlcManager.fund(accounts[1], H, 90000,
                 htlcId, {
                     'from': accounts[0],
                     'value': web3.utils.toWei('1', 'ether'),

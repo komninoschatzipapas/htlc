@@ -24,5 +24,7 @@
     "prettier-plugin-solidity": "^1.0.0-alpha.11",
     "truffle": "^5.0.0-beta.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "openzeppelin-solidity": "^2.0.0"
+  }
 }
