@@ -1,4 +1,4 @@
-# OpenSwap EVM Contracts
+# EVM HTLC
 
 This repository contains contracts written in Solidity(which can be compiled to EVM bytecode) to create HTLCs for Ether using the sha256 hash function.
 
